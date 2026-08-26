@@ -5,7 +5,8 @@ namespace MiApiCuadrado.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 public class MathController : ControllerBase
-{
+{     
+    
     [HttpGet("cuadrado/{numero:int}")]
     public IActionResult Cuadrado(int numero)
     {
