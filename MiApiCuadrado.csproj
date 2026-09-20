@@ -20,4 +20,11 @@
     </PackageReference>
   </ItemGroup>
 
+     <ItemGroup>
+    <Compile Remove="MiApiCuadrado.Tests\**" />
+    <Content Remove="MiApiCuadrado.Tests\**" />
+    <EmbeddedResource Remove="MiApiCuadrado.Tests\**" />
+    <None Remove="MiApiCuadrado.Tests\**" />
+  </ItemGroup>
+
 </Project>
