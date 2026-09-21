@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MiApiCuadrado.Data;
+﻿using Dapper;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using MiApiCuadrado.Models;
 
 namespace MiApiCuadrado.Controllers;
 
@@ -8,17 +9,30 @@ namespace MiApiCuadrado.Controllers;
 [Route("api/[controller]")]
 public class ProductosController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly string _connectionString;
 
-    public ProductosController(AppDbContext context)
+    public ProductosController(IConfiguration config)
     {
-        _context = context;
+        _connectionString = config.GetConnectionString("DefaultConnection")!;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetTodos()
     {
-        var productos = await _context.Productos.ToListAsync();
+        using var connection = new SqlConnection(_connectionString);
+        var productos = await connection.QueryAsync<Producto>(
+            "SELECT Id, Nombre, Precio, Stock FROM Productos");
         return Ok(productos);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Crear(Producto producto)
+    {
+        using var connection = new SqlConnection(_connectionString);
+        var sql = @"INSERT INTO Productos (Nombre, Precio, Stock)
+                    OUTPUT INSERTED.Id
+                    VALUES (@Nombre, @Precio, @Stock)";
+        producto.Id = await connection.ExecuteScalarAsync<int>(sql, producto);
+        return CreatedAtAction(nameof(GetTodos), new { id = producto.Id }, producto);
     }
 }
