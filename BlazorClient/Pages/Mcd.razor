@@ -1,0 +1,22 @@
+﻿@page "/mcd"
+@inject HttpClient Http
+
+<h3>MCD</h3>
+
+<input type="number" @bind="a" />
+<input type="number" @bind="b" />
+<button @onclick="Calcular">Calcular</button>
+
+<p>Resultado: @resultado</p>
+
+@code {
+    int a = 12;
+    int b = 3;
+    string resultado = "";
+
+    async Task Calcular()
+    {
+        var r = await Http.GetAsync($"api/MCD/{a}/{b}");
+        resultado = await r.Content.ReadAsStringAsync();
+    }
+}

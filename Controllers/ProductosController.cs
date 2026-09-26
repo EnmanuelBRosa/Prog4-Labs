@@ -16,12 +16,19 @@ public class ProductosController : ControllerBase
         _connectionString = config.GetConnectionString("DefaultConnection")!;
     }
 
+
+
     [HttpGet]
     public async Task<IActionResult> GetTodos()
     {
+        if (string.IsNullOrEmpty(_connectionString))
+        {
+            return Ok("DIAGNOSTICO: La connection string llegó VACÍA");
+        }
+
         using var connection = new SqlConnection(_connectionString);
         var productos = await connection.QueryAsync<Producto>(
-            "SELECT Id, Nombre, Precio, Stock FROM Productos");
+            "SELECT Id, Nombre, Precio, Stock FROM Productos ORDER BY Id DESC");
         return Ok(productos);
     }
 
